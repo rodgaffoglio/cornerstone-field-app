@@ -24,12 +24,9 @@ export default function Home() {
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-
     if (file) {
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setPhoto(reader.result as string);
-      };
+      reader.onloadend = () => setPhoto(reader.result as string);
       reader.readAsDataURL(file);
     }
   };
@@ -42,93 +39,90 @@ export default function Home() {
     const reportTime = now.toLocaleTimeString();
     const reportId = `CDS-${Date.now().toString().slice(-6)}`;
 
-    // Header
-    doc.setFillColor(180, 0, 0);
-    doc.rect(0, 0, 210, 45, "F");
+    const logo = new Image();
+    logo.src = "/cornerstone-logo.png";
 
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(18);
-    doc.text("CORNERSTONE", 20, 18);
-    doc.text("DOCK & DOOR SOLUTIONS", 20, 28);
+    logo.onload = () => {
+      // Light Header
+      doc.setFillColor(245, 245, 245);
+      doc.rect(0, 0, 210, 55, "F");
 
-    doc.setFontSize(12);
-    doc.text("Professional Inspection Report", 20, 40);
+      // Logo
+      doc.addImage(logo, "PNG", 12, 5, 60, 40);
 
-    // Metadata
-    doc.setFontSize(9);
-    doc.text(`Date: ${reportDate}`, 145, 18);
-    doc.text(`Time: ${reportTime}`, 145, 25);
-    doc.text(`Report ID: ${reportId}`, 145, 32);
+      // Metadata
+      doc.setTextColor(10, 25, 45);
+      doc.setFontSize(10);
 
-    doc.setTextColor(0, 0, 0);
+      doc.text(`Date: ${reportDate}`, 145, 18);
+      doc.text(`Time: ${reportTime}`, 145, 26);
+      doc.text(`Report ID: ${reportId}`, 145, 34);
 
-    // Inspection Details
-    doc.setFontSize(12);
-    doc.text("Technician: Cornerstone Inspector", 20, 58);
+      // Report Title
+      doc.setFontSize(16);
+      doc.text("PROFESSIONAL INSPECTION REPORT", 20, 50);
 
-    doc.text(`Facility: ${facility}`, 20, 72);
-    doc.text(`Dock: ${dock}`, 20, 82);
-    doc.text(`Contact: ${contact}`, 20, 92);
-    doc.text(`Asset: ${asset}`, 20, 102);
-    doc.text(`Defect: ${defect}`, 20, 112);
+      doc.setTextColor(0, 0, 0);
+      doc.setFontSize(12);
 
-    // Severity colors
-    if (severity === "Monitor") {
-      doc.setTextColor(0, 150, 0);
-    } else if (severity === "Maintenance Needed") {
-      doc.setTextColor(220, 180, 0);
-    } else if (severity === "Repair Recommended") {
-      doc.setTextColor(255, 140, 0);
-    } else if (severity === "Immediate Safety Concern") {
-      doc.setTextColor(200, 0, 0);
-    }
+      // Inspection Data
+      doc.text("Technician: Cornerstone Inspector", 20, 70);
 
-    doc.text(`Severity: ${severity}`, 20, 122);
+      doc.text(`Facility: ${facility}`, 20, 85);
+      doc.text(`Dock: ${dock}`, 20, 95);
+      doc.text(`Contact: ${contact}`, 20, 105);
+      doc.text(`Asset: ${asset}`, 20, 115);
+      doc.text(`Defect: ${defect}`, 20, 125);
 
-    doc.setTextColor(0, 0, 0);
+      // Severity Colors
+      if (severity === "Monitor") {
+        doc.setTextColor(0, 150, 0);
+      } else if (severity === "Maintenance Needed") {
+        doc.setTextColor(220, 180, 0);
+      } else if (severity === "Repair Recommended") {
+        doc.setTextColor(255, 140, 0);
+      } else if (severity === "Immediate Safety Concern") {
+        doc.setTextColor(200, 0, 0);
+      }
 
-    doc.text(`Notes: ${notes}`, 20, 136);
+      doc.text(`Severity: ${severity}`, 20, 135);
 
-    doc.text(
-      `Recommendation: ${recommendations[defect] || ""}`,
-      20,
-      151
-    );
+      doc.setTextColor(0, 0, 0);
 
-    if (photo) {
-      const format = photo.includes("png") ? "PNG" : "JPEG";
-      doc.addImage(photo, format, 20, 165, 160, 55);
-    }
+      doc.text(`Notes: ${notes}`, 20, 150);
 
-    doc.line(20, 240, 190, 240);
-    doc.text("Inspector Signature: ___________________", 20, 252);
+      doc.text(
+        `Recommendation: ${recommendations[defect] || ""}`,
+        20,
+        165
+      );
 
-    doc.save("cornerstone-inspection-report.pdf");
+      if (photo) {
+        const format = photo.includes("png") ? "PNG" : "JPEG";
+        doc.addImage(photo, format, 20, 175, 160, 70);
+      }
+
+      doc.line(20, 245, 190, 245);
+      doc.text("Inspector Signature: ___________________", 20, 257);
+
+      doc.save("cornerstone-inspection-report.pdf");
+    };
   };
 
   return (
     <div style={{ padding: "40px", fontFamily: "Arial" }}>
       <h1>Cornerstone Field Inspection</h1>
 
-      <input
-        placeholder="Facility Name"
-        onChange={(e) => setFacility(e.target.value)}
-      />
+      <input placeholder="Facility Name" onChange={(e)=>setFacility(e.target.value)} />
       <br /><br />
 
-      <input
-        placeholder="Dock Number"
-        onChange={(e) => setDock(e.target.value)}
-      />
+      <input placeholder="Dock Number" onChange={(e)=>setDock(e.target.value)} />
       <br /><br />
 
-      <input
-        placeholder="Site Contact"
-        onChange={(e) => setContact(e.target.value)}
-      />
+      <input placeholder="Site Contact" onChange={(e)=>setContact(e.target.value)} />
       <br /><br />
 
-      <select onChange={(e) => setAsset(e.target.value)}>
+      <select onChange={(e)=>setAsset(e.target.value)}>
         <option>Select Asset</option>
         <option>Overhead Door</option>
         <option>Dock Leveler</option>
@@ -137,7 +131,7 @@ export default function Home() {
 
       <br /><br />
 
-      <select onChange={(e) => setDefect(e.target.value)}>
+      <select onChange={(e)=>setDefect(e.target.value)}>
         <option>Select Defect</option>
         <option>Track Misalignment</option>
         <option>Seal Damage</option>
@@ -146,7 +140,7 @@ export default function Home() {
 
       <br /><br />
 
-      <select onChange={(e) => setSeverity(e.target.value)}>
+      <select onChange={(e)=>setSeverity(e.target.value)}>
         <option>Select Severity</option>
         <option>Monitor</option>
         <option>Maintenance Needed</option>
@@ -160,18 +154,12 @@ export default function Home() {
 
       <br /><br />
 
-      <textarea
-        placeholder="Inspection Notes"
-        onChange={(e) => setNotes(e.target.value)}
-      />
+      <textarea placeholder="Inspection Notes" onChange={(e)=>setNotes(e.target.value)} />
 
       <br /><br />
 
       <h3>Recommendation</h3>
-      <p>
-        {recommendations[defect] ||
-          "Select a defect to generate recommendation."}
-      </p>
+      <p>{recommendations[defect] || "Select a defect to generate recommendation."}</p>
 
       <br /><br />
 
