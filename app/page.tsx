@@ -48,7 +48,7 @@ export default function Home() {
     doc.text("CORNERSTONE DOCK & DOOR SOLUTIONS", 20, 20);
 
     doc.setFontSize(12);
- doc.text("TEST BRANDING WORKS", 20, 32);
+ doc.text("Professional Inspection Report", 20, 32);
 
     // Reset text color
     doc.setTextColor(0, 0, 0);
