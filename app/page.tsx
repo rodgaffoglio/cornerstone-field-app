@@ -39,10 +39,21 @@ export default function Home() {
   const generatePDF = () => {
     const doc = new jsPDF();
 
-    doc.setFontSize(18);
-    doc.text("Cornerstone Dock & Door Solutions", 20, 20);
-    doc.text("Inspection Report", 20, 35);
+    // Red Header
+    doc.setFillColor(180, 0, 0);
+    doc.rect(0, 0, 210, 40, "F");
 
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(18);
+    doc.text("CORNERSTONE DOCK & DOOR SOLUTIONS", 20, 20);
+
+    doc.setFontSize(12);
+ doc.text("TEST BRANDING WORKS", 20, 32);
+
+    // Reset text color
+    doc.setTextColor(0, 0, 0);
+
+    // Inspection Data
     doc.setFontSize(12);
     doc.text(`Facility: ${facility}`, 20, 55);
     doc.text(`Dock: ${dock}`, 20, 65);
@@ -59,8 +70,12 @@ export default function Home() {
     );
 
     if (photo) {
-      doc.addImage(photo, "JPEG", 20, 145, 160, 90);
+      const format = photo.includes("png") ? "PNG" : "JPEG";
+      doc.addImage(photo, format, 20, 145, 160, 80);
     }
+
+    doc.line(20, 240, 190, 240);
+    doc.text("Inspector Signature: ___________________", 20, 252);
 
     doc.save("cornerstone-inspection-report.pdf");
   };
@@ -69,13 +84,22 @@ export default function Home() {
     <div style={{ padding: "40px", fontFamily: "Arial" }}>
       <h1>Cornerstone Field Inspection</h1>
 
-      <input placeholder="Facility Name" onChange={(e) => setFacility(e.target.value)} />
+      <input
+        placeholder="Facility Name"
+        onChange={(e) => setFacility(e.target.value)}
+      />
       <br /><br />
 
-      <input placeholder="Dock Number" onChange={(e) => setDock(e.target.value)} />
+      <input
+        placeholder="Dock Number"
+        onChange={(e) => setDock(e.target.value)}
+      />
       <br /><br />
 
-      <input placeholder="Site Contact" onChange={(e) => setContact(e.target.value)} />
+      <input
+        placeholder="Site Contact"
+        onChange={(e) => setContact(e.target.value)}
+      />
       <br /><br />
 
       <select onChange={(e) => setAsset(e.target.value)}>
@@ -106,20 +130,26 @@ export default function Home() {
 
       <br /><br />
 
-      <input type="file" accept="image/*" onChange={handlePhotoUpload} />
+      <input
+        type="file"
+        accept="image/*"
+        onChange={handlePhotoUpload}
+      />
 
       <br /><br />
 
-      {photo && <img src={photo} alt="Inspection" style={{ maxWidth: "400px" }} />}
-
-      <br /><br />
-
-      <textarea placeholder="Inspection Notes" onChange={(e) => setNotes(e.target.value)} />
+      <textarea
+        placeholder="Inspection Notes"
+        onChange={(e) => setNotes(e.target.value)}
+      />
 
       <br /><br />
 
       <h3>Recommendation</h3>
-      <p>{recommendations[defect] || "Select a defect to generate recommendation."}</p>
+      <p>
+        {recommendations[defect] ||
+          "Select a defect to generate recommendation."}
+      </p>
 
       <br /><br />
 
