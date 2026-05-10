@@ -27,11 +27,9 @@ export default function Home() {
 
     if (file) {
       const reader = new FileReader();
-
       reader.onloadend = () => {
         setPhoto(reader.result as string);
       };
-
       reader.readAsDataURL(file);
     }
   };
@@ -39,27 +37,42 @@ export default function Home() {
   const generatePDF = () => {
     const doc = new jsPDF();
 
+    const now = new Date();
+    const reportDate = now.toLocaleDateString();
+    const reportTime = now.toLocaleTimeString();
+    const reportId = `CDS-${Date.now().toString().slice(-6)}`;
+
     // Header
     doc.setFillColor(180, 0, 0);
-    doc.rect(0, 0, 210, 40, "F");
+    doc.rect(0, 0, 210, 45, "F");
 
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(18);
-    doc.text("CORNERSTONE DOCK & DOOR SOLUTIONS", 20, 20);
+    doc.text("CORNERSTONE", 20, 18);
+    doc.text("DOCK & DOOR SOLUTIONS", 20, 28);
 
     doc.setFontSize(12);
-    doc.text("Professional Inspection Report", 20, 32);
+    doc.text("Professional Inspection Report", 20, 40);
+
+    // Metadata
+    doc.setFontSize(9);
+    doc.text(`Date: ${reportDate}`, 145, 18);
+    doc.text(`Time: ${reportTime}`, 145, 25);
+    doc.text(`Report ID: ${reportId}`, 145, 32);
 
     doc.setTextColor(0, 0, 0);
 
-    // Inspection data
-    doc.text(`Facility: ${facility}`, 20, 55);
-    doc.text(`Dock: ${dock}`, 20, 65);
-    doc.text(`Contact: ${contact}`, 20, 75);
-    doc.text(`Asset: ${asset}`, 20, 85);
-    doc.text(`Defect: ${defect}`, 20, 95);
+    // Inspection Details
+    doc.setFontSize(12);
+    doc.text("Technician: Cornerstone Inspector", 20, 58);
 
-    // Severity color coding
+    doc.text(`Facility: ${facility}`, 20, 72);
+    doc.text(`Dock: ${dock}`, 20, 82);
+    doc.text(`Contact: ${contact}`, 20, 92);
+    doc.text(`Asset: ${asset}`, 20, 102);
+    doc.text(`Defect: ${defect}`, 20, 112);
+
+    // Severity colors
     if (severity === "Monitor") {
       doc.setTextColor(0, 150, 0);
     } else if (severity === "Maintenance Needed") {
@@ -70,25 +83,25 @@ export default function Home() {
       doc.setTextColor(200, 0, 0);
     }
 
-    doc.text(`Severity: ${severity}`, 20, 105);
+    doc.text(`Severity: ${severity}`, 20, 122);
 
     doc.setTextColor(0, 0, 0);
 
-    doc.text(`Notes: ${notes}`, 20, 120);
+    doc.text(`Notes: ${notes}`, 20, 136);
 
     doc.text(
       `Recommendation: ${recommendations[defect] || ""}`,
       20,
-      135
+      151
     );
 
     if (photo) {
       const format = photo.includes("png") ? "PNG" : "JPEG";
-      doc.addImage(photo, format, 20, 150, 160, 70);
+      doc.addImage(photo, format, 20, 165, 160, 55);
     }
 
-    doc.line(20, 235, 190, 235);
-    doc.text("Inspector Signature: ___________________", 20, 247);
+    doc.line(20, 240, 190, 240);
+    doc.text("Inspector Signature: ___________________", 20, 252);
 
     doc.save("cornerstone-inspection-report.pdf");
   };
