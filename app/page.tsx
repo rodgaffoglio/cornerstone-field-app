@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import jsPDF from "jspdf";
 
 export default function Home() {
   const [facility, setFacility] = useState("");
@@ -10,7 +11,7 @@ export default function Home() {
   const [asset, setAsset] = useState("");
   const [defect, setDefect] = useState("");
   const [severity, setSeverity] = useState("");
-  const [photo, setPhoto] = useState<string | null>(null);
+  const [photo, setPhoto] = useState("");
 
   const recommendations: Record<string, string> = {
     "Track Misalignment":
@@ -23,34 +24,58 @@ export default function Home() {
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+
     if (file) {
-      setPhoto(URL.createObjectURL(file));
+      const reader = new FileReader();
+
+      reader.onloadend = () => {
+        setPhoto(reader.result as string);
+      };
+
+      reader.readAsDataURL(file);
     }
+  };
+
+  const generatePDF = () => {
+    const doc = new jsPDF();
+
+    doc.setFontSize(18);
+    doc.text("Cornerstone Dock & Door Solutions", 20, 20);
+    doc.text("Inspection Report", 20, 35);
+
+    doc.setFontSize(12);
+    doc.text(`Facility: ${facility}`, 20, 55);
+    doc.text(`Dock: ${dock}`, 20, 65);
+    doc.text(`Contact: ${contact}`, 20, 75);
+    doc.text(`Asset: ${asset}`, 20, 85);
+    doc.text(`Defect: ${defect}`, 20, 95);
+    doc.text(`Severity: ${severity}`, 20, 105);
+    doc.text(`Notes: ${notes}`, 20, 115);
+
+    doc.text(
+      `Recommendation: ${recommendations[defect] || ""}`,
+      20,
+      130
+    );
+
+    if (photo) {
+      doc.addImage(photo, "JPEG", 20, 145, 160, 90);
+    }
+
+    doc.save("cornerstone-inspection-report.pdf");
   };
 
   return (
     <div style={{ padding: "40px", fontFamily: "Arial" }}>
       <h1>Cornerstone Field Inspection</h1>
 
-      <input
-        placeholder="Facility Name"
-        value={facility}
-        onChange={(e) => setFacility(e.target.value)}
-      />
+      <input placeholder="Facility Name" onChange={(e) => setFacility(e.target.value)} />
       <br /><br />
 
-      <input
-        placeholder="Dock Number"
-        value={dock}
-        onChange={(e) => setDock(e.target.value)}
-      />
+      <input placeholder="Dock Number" onChange={(e) => setDock(e.target.value)} />
       <br /><br />
 
-      <input
-        placeholder="Site Contact"
-        value={contact}
-        onChange={(e) => setContact(e.target.value)}
-      />
+      <input placeholder="Site Contact" onChange={(e) => setContact(e.target.value)} />
       <br /><br />
 
       <select onChange={(e) => setAsset(e.target.value)}>
@@ -85,32 +110,22 @@ export default function Home() {
 
       <br /><br />
 
-      {photo && (
-        <div>
-          <h3>Uploaded Inspection Photo</h3>
-          <img
-            src={photo}
-            alt="Inspection"
-            style={{ maxWidth: "400px", borderRadius: "8px" }}
-          />
-        </div>
-      )}
+      {photo && <img src={photo} alt="Inspection" style={{ maxWidth: "400px" }} />}
 
-      <br />
+      <br /><br />
 
-      <textarea
-        placeholder="Inspection Notes"
-        value={notes}
-        onChange={(e) => setNotes(e.target.value)}
-      />
+      <textarea placeholder="Inspection Notes" onChange={(e) => setNotes(e.target.value)} />
 
       <br /><br />
 
       <h3>Recommendation</h3>
-      <p>
-        {recommendations[defect] ||
-          "Select a defect to generate recommendation."}
-      </p>
+      <p>{recommendations[defect] || "Select a defect to generate recommendation."}</p>
+
+      <br /><br />
+
+      <button onClick={generatePDF}>
+        Generate PDF Inspection Report
+      </button>
     </div>
   );
 }
