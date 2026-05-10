@@ -39,7 +39,7 @@ export default function Home() {
   const generatePDF = () => {
     const doc = new jsPDF();
 
-    // Red Header
+    // Header
     doc.setFillColor(180, 0, 0);
     doc.rect(0, 0, 210, 40, "F");
 
@@ -48,34 +48,47 @@ export default function Home() {
     doc.text("CORNERSTONE DOCK & DOOR SOLUTIONS", 20, 20);
 
     doc.setFontSize(12);
- doc.text("Professional Inspection Report", 20, 32);
+    doc.text("Professional Inspection Report", 20, 32);
 
-    // Reset text color
     doc.setTextColor(0, 0, 0);
 
-    // Inspection Data
-    doc.setFontSize(12);
+    // Inspection data
     doc.text(`Facility: ${facility}`, 20, 55);
     doc.text(`Dock: ${dock}`, 20, 65);
     doc.text(`Contact: ${contact}`, 20, 75);
     doc.text(`Asset: ${asset}`, 20, 85);
     doc.text(`Defect: ${defect}`, 20, 95);
+
+    // Severity color coding
+    if (severity === "Monitor") {
+      doc.setTextColor(0, 150, 0);
+    } else if (severity === "Maintenance Needed") {
+      doc.setTextColor(220, 180, 0);
+    } else if (severity === "Repair Recommended") {
+      doc.setTextColor(255, 140, 0);
+    } else if (severity === "Immediate Safety Concern") {
+      doc.setTextColor(200, 0, 0);
+    }
+
     doc.text(`Severity: ${severity}`, 20, 105);
-    doc.text(`Notes: ${notes}`, 20, 115);
+
+    doc.setTextColor(0, 0, 0);
+
+    doc.text(`Notes: ${notes}`, 20, 120);
 
     doc.text(
       `Recommendation: ${recommendations[defect] || ""}`,
       20,
-      130
+      135
     );
 
     if (photo) {
       const format = photo.includes("png") ? "PNG" : "JPEG";
-      doc.addImage(photo, format, 20, 145, 160, 80);
+      doc.addImage(photo, format, 20, 150, 160, 70);
     }
 
-    doc.line(20, 240, 190, 240);
-    doc.text("Inspector Signature: ___________________", 20, 252);
+    doc.line(20, 235, 190, 235);
+    doc.text("Inspector Signature: ___________________", 20, 247);
 
     doc.save("cornerstone-inspection-report.pdf");
   };
@@ -130,11 +143,7 @@ export default function Home() {
 
       <br /><br />
 
-      <input
-        type="file"
-        accept="image/*"
-        onChange={handlePhotoUpload}
-      />
+      <input type="file" accept="image/*" onChange={handlePhotoUpload} />
 
       <br /><br />
 
