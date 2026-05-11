@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import jsPDF from "jspdf";
 
 export default function Home() {
@@ -12,7 +12,6 @@ export default function Home() {
   const [defect, setDefect] = useState("");
   const [severity, setSeverity] = useState("");
   const [photo, setPhoto] = useState("");
-  const [history, setHistory] = useState<any[]>([]);
 
   const recommendations: Record<string, string> = {
     "Track Misalignment":
@@ -21,25 +20,6 @@ export default function Home() {
       "Recommend perimeter seal replacement to prevent energy loss.",
     "Hydraulic Leak":
       "Recommend hydraulic system inspection and seal replacement.",
-  };
-
-  useEffect(() => {
-    const saved = localStorage.getItem("cornerstoneHistory");
-    if (saved) setHistory(JSON.parse(saved));
-  }, []);
-
-  const saveInspection = () => {
-    const newInspection = {
-      facility,
-      dock,
-      defect,
-      severity,
-      date: new Date().toLocaleDateString(),
-    };
-
-    const updated = [...history, newInspection];
-    setHistory(updated);
-    localStorage.setItem("cornerstoneHistory", JSON.stringify(updated));
   };
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,44 +43,72 @@ export default function Home() {
     logo.src = "/cornerstone-logo.png";
 
     logo.onload = () => {
-      doc.setFillColor(245,245,245);
-      doc.rect(0,0,210,55,"F");
+      // Light Header
+      doc.setFillColor(245, 245, 245);
+      doc.rect(0, 0, 210, 55, "F");
 
-      doc.addImage(logo,"PNG",12,5,60,40);
+      // Logo
+      doc.addImage(logo, "PNG", 12, 5, 60, 40);
 
-      doc.setTextColor(10,25,45);
+      // Metadata
+      doc.setTextColor(10, 25, 45);
       doc.setFontSize(10);
 
-      doc.text(`Date: ${reportDate}`,145,18);
-      doc.text(`Time: ${reportTime}`,145,26);
-      doc.text(`Report ID: ${reportId}`,145,34);
+      doc.text(`Date: ${reportDate}`, 145, 18);
+      doc.text(`Time: ${reportTime}`, 145, 26);
+      doc.text(`Report ID: ${reportId}`, 145, 34);
 
+      // Report Title
       doc.setFontSize(16);
-      doc.text("PROFESSIONAL INSPECTION REPORT",20,50);
+      doc.text("PROFESSIONAL INSPECTION REPORT", 20, 50);
 
-      doc.setTextColor(0,0,0);
+      doc.setTextColor(0, 0, 0);
       doc.setFontSize(12);
 
-      doc.text(`Facility: ${facility}`,20,75);
-      doc.text(`Dock: ${dock}`,20,85);
-      doc.text(`Contact: ${contact}`,20,95);
-      doc.text(`Asset: ${asset}`,20,105);
-      doc.text(`Defect: ${defect}`,20,115);
-      doc.text(`Severity: ${severity}`,20,125);
-      doc.text(`Notes: ${notes}`,20,140);
+      // Inspection Data
+      doc.text("Technician: Cornerstone Inspector", 20, 70);
+
+      doc.text(`Facility: ${facility}`, 20, 85);
+      doc.text(`Dock: ${dock}`, 20, 95);
+      doc.text(`Contact: ${contact}`, 20, 105);
+      doc.text(`Asset: ${asset}`, 20, 115);
+      doc.text(`Defect: ${defect}`, 20, 125);
+
+      // Severity Colors
+      if (severity === "Monitor") {
+        doc.setTextColor(0, 150, 0);
+      } else if (severity === "Maintenance Needed") {
+        doc.setTextColor(220, 180, 0);
+      } else if (severity === "Repair Recommended") {
+        doc.setTextColor(255, 140, 0);
+      } else if (severity === "Immediate Safety Concern") {
+        doc.setTextColor(200, 0, 0);
+      }
+
+      doc.text(`Severity: ${severity}`, 20, 135);
+
+      doc.setTextColor(0, 0, 0);
+
+      doc.text(`Notes: ${notes}`, 20, 150);
 
       doc.text(
         `Recommendation: ${recommendations[defect] || ""}`,
         20,
-        155
+        165
       );
 
       if (photo) {
         const format = photo.includes("png") ? "PNG" : "JPEG";
-        doc.addImage(photo, format, 20, 170, 160, 70);
+        doc.addImage(photo, format, 20, 175, 160, 70);
       }
 
-      doc.save("cornerstone-inspection-report.pdf");
+      doc.line(20, 245, 190, 245);
+      doc.text("Inspector Signature: ___________________", 20, 257);
+
+      const pdfBlob = doc.output("blob");
+const pdfUrl = URL.createObjectURL(pdfBlob);
+
+window.open(pdfUrl, "_blank");
     };
   };
 
@@ -153,24 +161,14 @@ export default function Home() {
 
       <br /><br />
 
-      <button onClick={saveInspection}>
-        Save Inspection
+      <h3>Recommendation</h3>
+      <p>{recommendations[defect] || "Select a defect to generate recommendation."}</p>
+
+      <br /><br />
+
+      <button onClick={generatePDF}>
+        Generate PDF Inspection Report
       </button>
-
-      <button
-        onClick={generatePDF}
-        style={{ marginLeft: "15px" }}
-      >
-        Generate PDF
-      </button>
-
-      <h2 style={{ marginTop: "40px" }}>Inspection History</h2>
-
-      {history.map((item, index) => (
-        <div key={index}>
-          {item.date} | {item.facility} | Dock {item.dock} | {item.defect}
-        </div>
-      ))}
     </div>
   );
 }
