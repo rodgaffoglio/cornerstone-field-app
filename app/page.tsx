@@ -25,6 +25,7 @@ export default function Home() {
 
   useEffect(() => {
     const saved = localStorage.getItem("cornerstoneHistory");
+
     if (saved) {
       setHistory(JSON.parse(saved));
     }
@@ -131,7 +132,7 @@ export default function Home() {
 
       doc.text(`Defect: ${defect}`, 20, 125);
 
-      // Severity colors
+      // Severity Colors
       if (severity === "Monitor") {
         doc.setTextColor(0, 150, 0);
       } else if (severity === "Maintenance Needed") {
@@ -148,7 +149,7 @@ export default function Home() {
 
       doc.text(`Severity: ${severity}`, 20, 135);
 
-      // Reset color
+      // Reset text color
       doc.setTextColor(0, 0, 0);
 
       doc.text(`Notes: ${notes}`, 20, 150);
@@ -186,10 +187,12 @@ export default function Home() {
         257
       );
 
-      // SAVE PDF
-      doc.save(
-        `cornerstone-inspection-${reportId}.pdf`
-      );
+      // MOBILE FRIENDLY PDF OUTPUT
+      const pdfBlob = doc.output("blob");
+
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+
+      window.open(pdfUrl, "_blank");
     };
   };
 
