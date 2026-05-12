@@ -104,6 +104,11 @@ export default function Home() {
       defect,
       severity,
       total,
+      technician: "",
+      scheduledDate: "",
+      scheduledTime: "",
+      partsNeeded: "",
+      completionNotes: "",
       status: "Quoted",
       created: new Date().toLocaleDateString(),
     };
@@ -118,15 +123,16 @@ export default function Home() {
     );
   };
 
-  const updateStatus = (
+  const updateWorkOrder = (
     id: string,
-    status: string
+    field: string,
+    value: string
   ) => {
     const updated = workOrders.map((order) => {
       if (order.id === id) {
         return {
           ...order,
-          status,
+          [field]: value,
         };
       }
 
@@ -545,11 +551,92 @@ export default function Home() {
           <br />
           <br />
 
+          Technician:
+          <input
+            placeholder="Assign Tech"
+            value={order.technician}
+            onChange={(e) =>
+              updateWorkOrder(
+                order.id,
+                "technician",
+                e.target.value
+              )
+            }
+          />
+
+          <br />
+          <br />
+
+          Scheduled Date:
+          <input
+            type="date"
+            value={order.scheduledDate}
+            onChange={(e) =>
+              updateWorkOrder(
+                order.id,
+                "scheduledDate",
+                e.target.value
+              )
+            }
+          />
+
+          <br />
+          <br />
+
+          Scheduled Time:
+          <input
+            type="time"
+            value={order.scheduledTime}
+            onChange={(e) =>
+              updateWorkOrder(
+                order.id,
+                "scheduledTime",
+                e.target.value
+              )
+            }
+          />
+
+          <br />
+          <br />
+
+          Parts Needed:
+          <input
+            placeholder="Parts Needed"
+            value={order.partsNeeded}
+            onChange={(e) =>
+              updateWorkOrder(
+                order.id,
+                "partsNeeded",
+                e.target.value
+              )
+            }
+          />
+
+          <br />
+          <br />
+
+          Completion Notes:
+          <textarea
+            placeholder="Completion Notes"
+            value={order.completionNotes}
+            onChange={(e) =>
+              updateWorkOrder(
+                order.id,
+                "completionNotes",
+                e.target.value
+              )
+            }
+          />
+
+          <br />
+          <br />
+
           <select
             value={order.status}
             onChange={(e) =>
-              updateStatus(
+              updateWorkOrder(
                 order.id,
+                "status",
                 e.target.value
               )
             }
