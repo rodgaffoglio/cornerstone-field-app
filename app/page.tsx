@@ -25,18 +25,25 @@ export default function Home() {
 
   useEffect(() => {
     const saved = localStorage.getItem("cornerstoneHistory");
-    if (saved) setHistory(JSON.parse(saved));
+
+    if (saved) {
+      setHistory(JSON.parse(saved));
+    }
   }, []);
 
-  const saveInspection = () => {
+  const saveInspection = async () => {
     const newInspection = {
       facility,
       dock,
+      contact,
+      asset,
       defect,
       severity,
+      notes,
       date: new Date().toLocaleDateString(),
     };
 
+    // Save locally
     const updated = [...history, newInspection];
 
     setHistory(updated);
@@ -45,6 +52,15 @@ export default function Home() {
       "cornerstoneHistory",
       JSON.stringify(updated)
     );
+
+    // Save to Airtable
+    await fetch("/api/save-inspection", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newInspection),
+    });
   };
 
   const handlePhotoUpload = (
@@ -70,6 +86,7 @@ export default function Home() {
 
     const reportDate = now.toLocaleDateString();
     const reportTime = now.toLocaleTimeString();
+
     const reportId = `CDS-${Date.now()
       .toString()
       .slice(-6)}`;
@@ -81,6 +98,7 @@ export default function Home() {
     logo.onload = () => {
       // Header
       doc.setFillColor(245, 245, 245);
+
       doc.rect(0, 0, 210, 55, "F");
 
       // Logo
@@ -88,13 +106,16 @@ export default function Home() {
 
       // Metadata
       doc.setTextColor(10, 25, 45);
+
       doc.setFontSize(10);
 
       doc.text(`Date: ${reportDate}`, 145, 18);
+
       doc.text(`Time: ${reportTime}`, 145, 26);
+
       doc.text(`Report ID: ${reportId}`, 145, 34);
 
-      // Report title
+      // Title
       doc.setFontSize(16);
 
       doc.text(
@@ -107,7 +128,7 @@ export default function Home() {
 
       doc.setFontSize(12);
 
-      // Inspection data
+      // Inspection Details
       doc.text(
         "Technician: Cornerstone Inspector",
         20,
@@ -124,7 +145,7 @@ export default function Home() {
 
       doc.text(`Defect: ${defect}`, 20, 125);
 
-      // Severity colors
+      // Severity Colors
       if (severity === "Monitor") {
         doc.setTextColor(0, 150, 0);
       } else if (
@@ -143,7 +164,7 @@ export default function Home() {
 
       doc.text(`Severity: ${severity}`, 20, 135);
 
-      // Reset color
+      // Reset text color
       doc.setTextColor(0, 0, 0);
 
       doc.text(`Notes: ${notes}`, 20, 150);
@@ -208,7 +229,9 @@ export default function Home() {
 
       <input
         placeholder="Dock Number"
-        onChange={(e) => setDock(e.target.value)}
+        onChange={(e) =>
+          setDock(e.target.value)
+        }
       />
 
       <br />
@@ -225,11 +248,16 @@ export default function Home() {
       <br />
 
       <select
-        onChange={(e) => setAsset(e.target.value)}
+        onChange={(e) =>
+          setAsset(e.target.value)
+        }
       >
         <option>Select Asset</option>
+
         <option>Overhead Door</option>
+
         <option>Dock Leveler</option>
+
         <option>Dock Seal</option>
       </select>
 
@@ -237,11 +265,16 @@ export default function Home() {
       <br />
 
       <select
-        onChange={(e) => setDefect(e.target.value)}
+        onChange={(e) =>
+          setDefect(e.target.value)
+        }
       >
         <option>Select Defect</option>
+
         <option>Track Misalignment</option>
+
         <option>Seal Damage</option>
+
         <option>Hydraulic Leak</option>
       </select>
 
@@ -254,9 +287,13 @@ export default function Home() {
         }
       >
         <option>Select Severity</option>
+
         <option>Monitor</option>
+
         <option>Maintenance Needed</option>
+
         <option>Repair Recommended</option>
+
         <option>Immediate Safety Concern</option>
       </select>
 
@@ -299,8 +336,8 @@ export default function Home() {
 
       {history.map((item, index) => (
         <div key={index}>
-          {item.date} | {item.facility} | Dock{" "}
-          {item.dock} | {item.defect}
+          {item.date} | {item.facility} |
+          Dock {item.dock} | {item.defect}
         </div>
       ))}
     </div>
