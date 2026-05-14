@@ -22,9 +22,7 @@ export async function POST(req: Request) {
           Severity: body.severity,
           Notes: body.notes,
           Date: new Date().toLocaleDateString(),
-          ReportID: `CDS-${Date.now()
-            .toString()
-            .slice(-6)}`,
+
         },
       },
     ]);
