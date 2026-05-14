@@ -1,0 +1,22 @@
+[33m22e6416[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m Fixed Airtable integration
+[33m72b49a3[m Fixed Airtable integration
+[33m784201f[m[33m ([m[1;31morigin/main[m[33m)[m Added PWA install support
+[33me907432[m Added PWA install support
+[33m9ceb0ef[m Added PWA install support
+[33mbc61c91[m Stable working version before Airtable integration
+[33me6894a0[m Added work order dashboard
+[33mc02c20b[m Added local inspection history tracking
+[33mf04fb90[m Improved PDF branding and photo layout
+[33m28e1bd8[m Updated mobile friendly PDF generation
+[33m32c166e[m Fixed logo path and restored PDF generation
+[33me84547c[m Fixed mobile PDF generation
+[33mb1fe950[m Added mobile app install support
+[33ma826432[m Added local inspection history tracking
+[33mad10f77[m Improved PDF branding and photo layout
+[33mb233919[m Added report metadata and layout improvements
+[33mee5f218[m Added severity color coding
+[33m2d684f4[m Removed test branding text
+[33m6d84f38[m Added branded inspection PDF
+[33m54bb1c7[m Added PDF photo reporting
+[33mc09a762[m Added photo upload
+[33me567311[m Initial Cornerstone app
